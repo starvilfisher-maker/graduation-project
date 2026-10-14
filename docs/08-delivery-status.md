@@ -13,7 +13,10 @@
 
 2026年10月14日本地使用 Python 3.12.14 完成基础验证：8项数学指标测试通过，源代码编译、实验配置和文档本地链接检查通过。检查未安装或导入TensorFlow，也未运行真实数据实验。
 
-GitHub发布和Codex云环境正在配置，成功状态以完成后的实测记录更新。本地检查通过不能替代云端验证。
+- GitHub：22个项目文件已提交到 `main`，研究方案与基础代码版本为 [`dbc716b`](https://github.com/starvilfisher-maker/graduation-project/commit/dbc716bd56668eaacdbb3a27282c2f808e4c5702)。[GitHub自动检查](https://github.com/starvilfisher-maker/graduation-project/actions/runs/38515980514)已成功，使用Linux与Python 3.11。
+- Codex云端：既有 `graduation-project` 环境已检出上述提交，Python 3.12.14下8项指标测试、编译、配置与文档链接检查通过。安装脚本和启动检查说明已保存，2026年10月14日重新发布完成，界面已确认“环境已发布”。环境保持仅本人可用。
+- 版本范围：云端实测与发布基于上述研究代码提交；之后的仓库更新仅补充本页交付记录，没有改变代码、配置或研究协议。发布后的独立新会话恢复未另行测试。
+- 验证范围：基础文档与代码工程；没有验证真实数据、TensorFlow训练、GPU可用性或模型效果。
 
 ## 尚未完成的研究工作
 
