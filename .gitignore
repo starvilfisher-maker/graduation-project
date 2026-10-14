@@ -1,0 +1,53 @@
+# Local environments, caches and editor state.
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+.DS_Store
+.idea/
+.vscode/
+
+# Credentials and machine-specific configuration.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Downloaded data, private case records and generated model/results artifacts.
+data/*
+!data/README.md
+datasets/
+downloads/
+outputs/
+runs/
+checkpoints/
+models/
+artifacts/
+reports/*
+!reports/README.md
+*.h5
+*.hdf5
+*.keras
+*.ckpt
+*.tfrecord
+*.tfrecords
+*.npy
+*.npz
+
+# Local reference documents are not automatically published.
+*.doc
+*.docx
+*.pdf
+*.xlsx
+*.xls
+*.zip
+*.tar
+*.gz
+
