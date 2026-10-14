@@ -1,0 +1,26 @@
+{
+  "id": "breast_v1",
+  "version": 1,
+  "status": "implemented_data_qc_pending_full_experiment_freeze",
+  "source_modes": [
+    "L",
+    "RGB",
+    "RGBA"
+  ],
+  "source_dtype": "uint8",
+  "image_alpha": "composite_on_black_before_grayscale",
+  "gray_weights_rgb": [
+    0.299,
+    0.587,
+    0.114
+  ],
+  "normalization": "divide_255_no_fitted_statistics",
+  "image_resize": "Pillow_float32_bilinear",
+  "mask_encoding": "equal_RGB_channels_values_0_255",
+  "mask_foreground": "color_channel_equals_255",
+  "mask_alpha": "positive_color_requires_positive_alpha_no_opacity_threshold",
+  "mask_resize": "Pillow_uint8_nearest",
+  "height": 256,
+  "width": 256,
+  "ground_truth_crop": false
+}

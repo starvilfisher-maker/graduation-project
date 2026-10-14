@@ -2,9 +2,9 @@
 
 本项目面向应用统计学本科毕业论文，使用 BrEaST 公开数据集和标准二维 U-Net，研究损失函数与数据增强对病灶分割效果、训练稳定性及不同病例表现的影响。
 
-当前已进入**论文逐步实施与首轮数据核对**。本地已取得官方数据并进行首次自动清点，完整人工质检、正式读取规则、患者划分、训练程序与模型实验仍待完成。仓库中的参数是拟采用的设计，不是实验结论；代码测试通过也不代表模型已经有效。
+当前已完成**确定性读取、全量缩放检查与核对图册制作**。本地256张原图和266张掩码均完成检查，252个目标缩放后均非空；助手已浏览全部总览并放大检查10例，人工复核记录、最终纳入清单、患者划分和模型训练仍待完成。仓库中的参数是拟采用的设计，不是实验结论；代码测试通过也不代表模型已经有效。
 
-开始逐步完成论文，请先读[论文执行与学习路线](docs/09-guided-thesis-roadmap.md)。本轮实际发现和读取限制见[数据首轮核对记录](docs/10-data-first-pass.md)。
+开始逐步完成论文，请先读[论文执行与学习路线](docs/09-guided-thesis-roadmap.md)。当前读取规则、实际结果与审阅范围见[预处理与第二轮核对](docs/11-preprocessing-and-qc.md)，历史编码发现见[首轮记录](docs/10-data-first-pass.md)。
 
 ## 从这里阅读
 
@@ -19,7 +19,8 @@
 | [资料与来源](docs/07-sources.md) | 核实过的原始资料，以及继续检索文献的方法 |
 | [当前交付状态](docs/08-delivery-status.md) | 哪些工作已完成，哪些仍待实现或验证 |
 | [论文执行与学习路线](docs/09-guided-thesis-roadmap.md) | 每一步做什么、交付什么、写入论文哪里；第一课如何读懂图像与掩码 |
-| [数据首轮核对记录](docs/10-data-first-pass.md) | 实际文件清点与通道编码发现，哪些核对仍未完成 |
+| [数据首轮核对记录](docs/10-data-first-pass.md) | 历史文件清点与通道编码发现 |
+| [预处理与第二轮核对](docs/11-preprocessing-and-qc.md) | 实际读取规则、全量缩放检查、图册及论文方法草稿 |
 
 ## 研究主线
 
@@ -53,23 +54,24 @@ bash scripts/setup_codex.sh
 python3 scripts/check_environment.py
 ```
 
-这些命令检查目录与配置，执行二值指标和数据关联测试。有 NumPy、Pillow、openpyxl 时还执行相应图像/表格审计测试；缺少可选依赖时明确跳过这些测试。完整 U-Net 和训练流程仍按实现文档逐步建设。
+这些命令检查目录与配置，执行二值指标、数据关联与确定性预处理测试。有 NumPy、Pillow、openpyxl 时还执行相应图像/表格审计测试；缺少可选依赖时明确跳过这些测试。完整 U-Net 和训练流程仍按实现文档逐步建设。
 
-已有官方本地数据及审计依赖后，可执行实际可用的首轮审计命令（每次使用新的输出目录）：
+已有官方本地数据及审计依赖后，可执行当前审计与图册生成命令（每次使用新的输出目录）：
 
 ```bash
-python3 scripts/audit_breast.py --raw-dir data/raw/BrEaST-v1 --output-dir data/audit/my_first_audit
+python3 scripts/audit_breast.py --decoding-policy breast_v1 --raw-dir data/raw/BrEaST-v1 --output-dir data/audit/my_decoded_run
+python3 scripts/build_data_review.py --audit-dir data/audit/my_decoded_run --output-dir reports/my_data_review
 ```
 
-它保守地标记尚未定义读取规则的透明度和彩色通道，当前真实数据会报告待处理项并返回非零状态；这表示尚不满足自动放行条件，不表示这些病例应被排除。该脚本不生成患者划分，也不训练模型。所需依赖、检查覆盖及进一步解释见[首轮记录](docs/10-data-first-pass.md)。
+`breast_v1`显式处理图像透明度、灰度和二值掩码，生成256×256检查结果；图册以黄色显示目标、青色显示other，均为参考标注。省略读取规则参数仍执行历史保守审计，会将透明度/颜色列为待处理，不能据此排除病例。两项命令都不生成患者划分或运行训练，图册生成也不等于人工复核完成。依赖和详细解释见[第二轮记录](docs/11-preprocessing-and-qc.md)。
 
 ## 项目组织
 
 ```text
 docs/                    研究方案与实现说明
 configs/                 拟采用的实验配置
-src/breast_unet/          基础指标代码 后续扩展训练模块
-scripts/                 项目与环境检查
+src/breast_unet/          指标 数据审计 确定性预处理
+scripts/                 项目检查 数据审计 本地图册生成
 tests/                   数值和边界条件测试
 data/                    数据存放规范 原始文件不进版本库
 reports/                 结果产出规范 当前无正式实验结果

@@ -42,11 +42,22 @@
     "resize_policy": "direct_resize",
     "image_interpolation": "bilinear",
     "mask_interpolation": "nearest",
-    "normalization": "uint8_divide_255_after_range_check",
-    "binarize_target": "foreground_greater_than_zero_after_label_audit",
+    "normalization": "divide_255_no_fitted_statistics",
+    "binarize_target": "equal_RGB_channels_0_255_then_color_equals_255",
     "augment_training_only": true,
     "empty_positive_target_after_resize": "stop_and_audit_no_silent_relabel_or_exclusion",
-    "ground_truth_based_crop": false
+    "ground_truth_based_crop": false,
+    "decoding_policy_id": "breast_v1",
+    "decoding_policy_file": "configs/preprocessing_v1.json",
+    "implementation_status": "deterministic_preprocessing_implemented_human_review_pending",
+    "source_dtype": "uint8_validated",
+    "image_alpha": "composite_on_black_before_grayscale",
+    "gray_weights_rgb": [
+      0.299,
+      0.587,
+      0.114
+    ],
+    "mask_alpha": "positive_color_requires_positive_alpha_no_opacity_threshold"
   },
   "model": {
     "architecture": "standard_2d_unet",

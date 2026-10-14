@@ -142,7 +142,7 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
-def inspect_png(path: Path, role: str) -> dict:
+def inspect_png(path: Path, role: str, decoding_policy: str = "strict") -> dict:
     """Inspect without altering originals; opaque alpha is explicitly ignored.
 
     Mask foreground is decoded from the verified grayscale channel only, never
@@ -152,6 +152,8 @@ def inspect_png(path: Path, role: str) -> dict:
     import numpy as np
     from PIL import Image
 
+    if decoding_policy not in {"strict", "breast_v1"}:
+        raise ValueError("unknown decoding policy")
     result: dict[str, Any] = {"issues": [], "role": role}
     try:
         with Image.open(path) as image:
@@ -177,12 +179,15 @@ def inspect_png(path: Path, role: str) -> dict:
                 result["transparent_color_all_zero"] = bool(np.all(array[..., :-1][alpha == 0] == 0))
                 result["alpha_equals_first_channel"] = bool(np.array_equal(alpha, array[..., 0]))
                 result["opaque_color_all_255"] = bool(np.all(array[..., :-1][alpha == 255] == 255))
-                if not np.all(alpha == 255):
+                if decoding_policy == "strict" and not np.all(alpha == 255):
                     result["issues"].append("nonopaque_alpha")
                     result["alpha_handling"] = "rejected_nonopaque"
                     return result
                 result["alpha_handling"] = "verified_opaque_255_then_ignored"
-                array = array[..., :-1]
+                if decoding_policy == "strict":
+                    array = array[..., :-1]
+            if decoding_policy == "breast_v1":
+                return _inspect_decoded(path, role, result)
             if image.mode not in {"1", "L", "I", "I;16", "I;16B", "I;16L", "RGB", "RGBA", "LA"}:
                 result["issues"].append("unsupported_image_mode")
                 return result
@@ -229,6 +234,52 @@ def inspect_png(path: Path, role: str) -> dict:
     return result
 
 
+def _inspect_decoded(path: Path, role: str, result: dict) -> dict:
+    import numpy as np
+    from .preprocessing import read_image, read_mask, resize_image, resize_mask
+
+    if role not in {"image", "tumor", "other"}:
+        result["issues"].append("unresolved_file_role")
+        return result
+    try:
+        if role == "image":
+            array = read_image(path)
+            resized = resize_image(array)
+            result["alpha_handling"] = "composite_black_then_weighted_grayscale"
+            result["grayscale_min"] = float(array.min())
+            result["grayscale_max"] = float(array.max())
+            result["resized_min"] = float(resized.min())
+            result["resized_max"] = float(resized.max())
+            result["image_resize_checked"] = True
+            result["image_tensor_shape"] = [256, 256, 1]
+            if not np.isfinite(resized).all():
+                result["issues"].append("nonfinite_resized_image")
+            digest = hashlib.sha256()
+            digest.update(json.dumps(list(array.shape)).encode())
+            digest.update(np.asarray(array, dtype="<f4").tobytes())
+            result["grayscale_sha256"] = digest.hexdigest()
+        else:
+            mask = read_mask(path)
+            result["alpha_handling"] = "binary_color_with_alpha_consistency_check"
+            result["unique_values"] = [int(v) for v in np.unique(mask)]
+            result["unique_value_count"] = len(result["unique_values"])
+            result["foreground_pixels"] = int(mask.sum())
+            result["foreground_fraction"] = float(mask.mean())
+            result["touches_image_edge"] = bool(mask[0].any() or mask[-1].any()
+                                                   or mask[:, 0].any() or mask[:, -1].any())
+            if not mask.any():
+                result["issues"].append("empty_mask")
+            resized = resize_mask(mask)
+            result["foreground_pixels_256"] = int(resized.sum())
+            result["foreground_fraction_256"] = float(resized.mean())
+            result["disappears_at_256"] = bool(mask.any() and not resized.any())
+            if result["disappears_at_256"]:
+                result["issues"].append("mask_disappears_at_256")
+    except ValueError as exc:
+        result["issues"].append(str(exc))
+    return result
+
+
 def read_metadata(path: Path) -> list[dict]:
     from openpyxl import load_workbook
 
@@ -268,12 +319,15 @@ def _write_csv(path: Path, rows: list[dict], fields: list[str]) -> None:
             })
 
 
-def audit_dataset(project_root: Path, raw_dir: Path, output_dir: Path) -> dict:
+def audit_dataset(project_root: Path, raw_dir: Path, output_dir: Path,
+                  decoding_policy: str = "strict") -> dict:
     """Audit official local files and exclusively create a new output folder."""
     import numpy
     import openpyxl
     import PIL
 
+    if decoding_policy not in {"strict", "breast_v1"}:
+        raise ValueError("unknown decoding policy")
     project_root, raw_dir, output_dir = (
         Path(path).resolve() for path in (project_root, raw_dir, output_dir)
     )
@@ -317,7 +371,7 @@ def audit_dataset(project_root: Path, raw_dir: Path, output_dir: Path) -> dict:
             if not occurrences:
                 orphan_paths.append(relative)
                 item["issues"].append("orphan_png")
-            details = inspect_png(path, role)
+            details = inspect_png(path, role, decoding_policy)
             prior_issues = item["issues"]
             item.update(details)
             item["issues"] = prior_issues + details["issues"]
@@ -348,6 +402,12 @@ def audit_dataset(project_root: Path, raw_dir: Path, output_dir: Path) -> dict:
             case["width"], case["height"] = image["width"], image["height"]
             case["image_mode"] = image["mode"]
             case["image_grayscale_sha256"] = image.get("grayscale_sha256", "")
+            case["image_alpha_zero_pixels"] = image.get("alpha_zero_pixels", 0)
+            case["image_alpha_partial_pixels"] = image.get("alpha_partial_pixels", 0)
+            case["image_rgb_equal"] = image.get("rgb_channels_equal", True)
+            case["aspect_ratio"] = image["width"] / image["height"]
+            case["resize_scale_x"] = 256 / image["width"]
+            case["resize_scale_y"] = 256 / image["height"]
             if image["path"] in duplicate_images:
                 case["review_flags"].append("duplicate_image_content")
             for role in ("tumor", "other"):
@@ -361,6 +421,20 @@ def audit_dataset(project_root: Path, raw_dir: Path, output_dir: Path) -> dict:
                     case["target_area_px"] = target["foreground_pixels"]
                     case["target_area_fraction"] = target["foreground_fraction"]
                     case["target_area_px_256"] = target["foreground_pixels_256"]
+                    case["target_touches_image_edge"] = target.get("touches_image_edge", False)
+                    if target.get("touches_image_edge"):
+                        case["review_flags"].append("target_touches_image_edge")
+                    if decoding_policy == "breast_v1" and not target["issues"]:
+                        from PIL import Image
+                        from .preprocessing import read_mask
+                        with Image.open(project_root / image["path"]) as source:
+                            pixels = numpy.asarray(source)
+                            mask = read_mask(project_root / target["path"])
+                            if source.mode == "RGBA" and mask.shape == pixels.shape[:2]:
+                                overlap = int(((pixels[..., 3] == 0) & (mask == 1)).sum())
+                                case["target_over_transparent_image_px"] = overlap
+                                if overlap:
+                                    case["review_flags"].append("target_over_transparent_image")
         case["issues"] = sorted(set(case["issues"]))
         case["review_flags"] = sorted(set(case["review_flags"]))
         case["automatic_status"] = "blocked" if case["issues"] else "review_required" if case["review_flags"] else "passed"
@@ -368,7 +442,8 @@ def audit_dataset(project_root: Path, raw_dir: Path, output_dir: Path) -> dict:
     mask_items = [item for item in png_items if item["role"] in {"tumor", "other"}]
     issue_counts = Counter(issue for case in cases for issue in case["issues"])
     summary = {
-        "audit_schema_version": "1.1",
+        "audit_schema_version": "1.2",
+        "decoding_policy": decoding_policy,
         "raw_directory": raw_relative, "output_directory": output_relative,
         "source_workbook": workbook_path.relative_to(project_root).as_posix(),
         "source_workbook_sha256": sha256_file(workbook_path),
@@ -383,6 +458,7 @@ def audit_dataset(project_root: Path, raw_dir: Path, output_dir: Path) -> dict:
         "png_role_counts": dict(sorted(Counter(item["role"] for item in png_items).items())),
         "png_mode_counts": dict(sorted(Counter(item.get("mode", "undecodable") for item in png_items).items())),
         "alpha_handling_counts": dict(sorted(Counter(item.get("alpha_handling", "undecodable") for item in png_items).items())),
+        "image_resize_checked": sum(item.get("image_resize_checked", False) for item in png_items),
         "mask_value_sets": sorted({json.dumps(item["unique_values"]) for item in png_items if "unique_values" in item}),
         "orphan_png_paths": orphan_paths, "global_issues": global_issues,
         "duplicate_png_file_groups": _duplicate_groups(png_items, "sha256"),
@@ -401,7 +477,7 @@ def audit_dataset(project_root: Path, raw_dir: Path, output_dir: Path) -> dict:
                 "validated_binary": sum(item["role"] == role and "foreground_pixels" in item for item in mask_items),
                 "resize_checked": sum(item["role"] == role and "foreground_pixels_256" in item for item in mask_items),
             } for role in ("tumor", "other")},
-            "interpretation": "An empty disappearance list is not a pass when resize coverage is incomplete. Nonopaque/color encodings remain unresolved; observations below do not authorize a target decoding rule.",
+            "interpretation": "An empty disappearance list is not a pass when resize coverage is incomplete. Read the named decoding policy and explicit coverage before interpreting results.",
         },
         "encoding_observations": {
             role: {
@@ -418,6 +494,7 @@ def audit_dataset(project_root: Path, raw_dir: Path, output_dir: Path) -> dict:
         "multiple_tumor_case_ids": [case["case_id"] for case in cases if len(case["tumor_filenames"]) > 1],
         "visual_review_status": "pending_visual_review", "training_ready": False,
         "automatic_checks_passed": not issue_counts and not global_issues and not orphan_paths,
+        "automatic_review_flags_resolved": not any(case["review_flags"] for case in cases),
         "split_created": False, "training_performed": False,
         "scope_notes": [
             "Automatic consistency checks do not establish that contours are medically correct.",
@@ -431,11 +508,24 @@ def audit_dataset(project_root: Path, raw_dir: Path, output_dir: Path) -> dict:
         ],
         "software": {"python": platform.python_version(), "numpy": numpy.__version__, "Pillow": PIL.__version__, "openpyxl": openpyxl.__version__},
     }
+    if decoding_policy == "breast_v1":
+        from .preprocessing import POLICY
+        summary["preprocessing_policy"] = POLICY
+        summary["preprocessing_policy_sha256"] = hashlib.sha256(
+            json.dumps(POLICY, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+    summary["code_sha256"] = {
+        name: sha256_file(project_root / name)
+        for name in ("src/breast_unet/data_audit.py", "src/breast_unet/preprocessing.py")
+        if (project_root / name).is_file()
+    }
     output_dir.mkdir(parents=True, exist_ok=False)
     case_fields = [
         "source_row", "case_id", "patient_id", "image_id", "classification", "margin",
         "image_paths", "tumor_paths", "other_paths", "width", "height", "image_mode",
         "image_grayscale_sha256", "target_area_px", "target_area_fraction", "target_area_px_256",
+        "image_alpha_zero_pixels", "image_alpha_partial_pixels", "image_rgb_equal",
+        "aspect_ratio", "resize_scale_x", "resize_scale_y", "target_touches_image_edge",
+        "target_over_transparent_image_px",
         "candidate_cohort", "automatic_status", "issues", "review_flags", "visual_review_status", "training_ready",
     ]
     inventory_fields = [
@@ -445,6 +535,8 @@ def audit_dataset(project_root: Path, raw_dir: Path, output_dir: Path) -> dict:
         "transparent_color_all_zero", "alpha_equals_first_channel", "opaque_color_all_255",
         "decoded_sha256", "grayscale_sha256", "unique_value_count", "unique_values",
         "foreground_pixels", "foreground_fraction", "foreground_pixels_256", "disappears_at_256", "issues",
+        "image_resize_checked", "image_tensor_shape", "resized_min", "resized_max",
+        "touches_image_edge", "foreground_fraction_256",
     ]
     _write_csv(output_dir / "cases.csv", cases, case_fields)
     _write_csv(output_dir / "file_inventory.csv", inventory, inventory_fields)

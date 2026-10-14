@@ -16,9 +16,12 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--raw-dir", default="data/raw/BrEaST-v1", help="Directory relative to the project root")
     parser.add_argument("--output-dir", required=True, help="New audit directory relative to the project root; never overwrite")
+    parser.add_argument("--decoding-policy", choices=("strict", "breast_v1"), default="strict",
+                        help="strict preserves the first-pass audit; breast_v1 uses the documented decoder")
     args = parser.parse_args()
     try:
-        summary = audit_dataset(PROJECT_ROOT, PROJECT_ROOT / args.raw_dir, PROJECT_ROOT / args.output_dir)
+        summary = audit_dataset(PROJECT_ROOT, PROJECT_ROOT / args.raw_dir, PROJECT_ROOT / args.output_dir,
+                                decoding_policy=args.decoding_policy)
     except ImportError:
         parser.exit(2, "Audit dependencies required: numpy, Pillow, openpyxl. Base checks do not install these.\n")
     except (ValueError, FileNotFoundError, FileExistsError) as exc:
