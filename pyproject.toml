@@ -9,6 +9,9 @@ description = "Research protocol and verified starting utilities for breast ultr
 requires-python = ">=3.10"
 dependencies = []
 
+[project.optional-dependencies]
+audit = ["numpy>=1.26", "Pillow>=10", "openpyxl>=3.1"]
+
 [tool.setuptools.packages.find]
 where = ["src"]
 
