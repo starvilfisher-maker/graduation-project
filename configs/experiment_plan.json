@@ -1,0 +1,349 @@
+{
+  "schema_version": 1,
+  "status": "planning_not_trained",
+  "parameter_status": "proposed_pending_protocol_freeze",
+  "project": "基于U-Net的乳腺超声病灶分割研究",
+  "dataset": {
+    "name": "BrEaST / Breast-Lesions-USG",
+    "unit": "patient",
+    "primary_cohort": "lesion_positive_cases_after_data_audit",
+    "normal_images": "separate_exploratory_false_detection_analysis",
+    "target": "tumor_masks_only_per_metadata",
+    "other_structure_annotations": "excluded_from_target",
+    "expected_counts_before_audit": {
+      "patients": 256,
+      "images": 256,
+      "benign": 154,
+      "malignant": 98,
+      "normal": 4
+    },
+    "missing_mask_policy": "audit_failure_not_normal",
+    "multiple_tumor_masks": "union_only_if_metadata_confirms_same_target_definition"
+  },
+  "split": {
+    "seed": 20261013,
+    "ratios": {
+      "train": 0.6,
+      "validation": 0.2,
+      "test": 0.2
+    },
+    "stratify": "Classification",
+    "shared_across_all_runs": true,
+    "freeze_manifest_before_training": true,
+    "duplicates_and_patient_groups_resolved_before_split": true,
+    "strategy": "stratified_train_test_split_60_40_then_heldout_50_50",
+    "stratification_scope": "benign_malignant_primary_cohort_only"
+  },
+  "preprocessing": {
+    "height": 256,
+    "width": 256,
+    "channels": 1,
+    "color_mode": "grayscale",
+    "resize_policy": "direct_resize",
+    "image_interpolation": "bilinear",
+    "mask_interpolation": "nearest",
+    "normalization": "uint8_divide_255_after_range_check",
+    "binarize_target": "foreground_greater_than_zero_after_label_audit",
+    "augment_training_only": true,
+    "empty_positive_target_after_resize": "stop_and_audit_no_silent_relabel_or_exclusion",
+    "ground_truth_based_crop": false
+  },
+  "model": {
+    "architecture": "standard_2d_unet",
+    "channels": [
+      32,
+      64,
+      128,
+      256,
+      512
+    ],
+    "convolutions_per_block": 2,
+    "kernel_size": 3,
+    "padding": "same",
+    "activation": "relu",
+    "output_channels": 1,
+    "output_activation": "sigmoid",
+    "attention": false,
+    "batch_normalization": false,
+    "dropout": 0.0,
+    "pooling": {
+      "type": "max_pool",
+      "kernel_size": 2,
+      "stride": 2
+    },
+    "upsampling": {
+      "type": "conv2d_transpose",
+      "kernel_size": 2,
+      "stride": 2
+    },
+    "pretrained": false
+  },
+  "training": {
+    "framework": "tensorflow_keras",
+    "seeds": [
+      17,
+      42,
+      2026
+    ],
+    "batch_size": 8,
+    "max_epochs": 100,
+    "optimizer": "Adam",
+    "learning_rate": 0.001,
+    "early_stopping": {
+      "monitor": "val_soft_dice",
+      "mode": "max",
+      "patience": 15,
+      "min_delta": 0.0001,
+      "restore_best_weights": true
+    },
+    "soft_dice": {
+      "reduction": "per_image_then_mean",
+      "epsilon": 1e-07,
+      "formula": "2*sum(y*p)/(sum(y)+sum(p)+epsilon)",
+      "used_by": "dice_loss_and_validation_monitor",
+      "epoch_aggregation": "sum_per_image_scores_divided_by_case_count"
+    },
+    "losses": {
+      "bce": {
+        "bce_weight": 1.0,
+        "dice_loss_weight": 0.0
+      },
+      "bce_dice": {
+        "bce_weight": 0.5,
+        "dice_loss_weight": 0.5
+      }
+    },
+    "augmentation": {
+      "probability": 0.5,
+      "rotation_degrees": [
+        -10.0,
+        10.0
+      ],
+      "translation_fraction_x": [
+        -0.05,
+        0.05
+      ],
+      "translation_fraction_y": [
+        -0.05,
+        0.05
+      ],
+      "joint_image_mask_transform": true,
+      "image_interpolation": "bilinear",
+      "mask_interpolation": "nearest",
+      "horizontal_flip": false,
+      "vertical_flip": false,
+      "empty_target_after_transform": "reject_and_use_original_pair",
+      "parameter_sampling": "angle_dx_dy_independent_uniform",
+      "fill_mode": "constant",
+      "image_fill_value": 0.0,
+      "mask_fill_value": 0,
+      "record_empty_transform_fallback_count": true
+    },
+    "bce_reduction": "mean_pixels_per_image_then_mean_images",
+    "checkpoint_selection": "same_improvement_rule_as_early_stopping",
+    "numeric_precision": "float32",
+    "learning_rate_schedule": "none"
+  },
+  "groups": [
+    {
+      "id": "A",
+      "loss": "bce",
+      "augmentation": false
+    },
+    {
+      "id": "B",
+      "loss": "bce_dice",
+      "augmentation": false
+    },
+    {
+      "id": "C",
+      "loss": "bce",
+      "augmentation": true
+    },
+    {
+      "id": "D",
+      "loss": "bce_dice",
+      "augmentation": true
+    }
+  ],
+  "runs": [
+    {
+      "id": "A_seed17",
+      "group": "A",
+      "seed": 17
+    },
+    {
+      "id": "A_seed42",
+      "group": "A",
+      "seed": 42
+    },
+    {
+      "id": "A_seed2026",
+      "group": "A",
+      "seed": 2026
+    },
+    {
+      "id": "B_seed17",
+      "group": "B",
+      "seed": 17
+    },
+    {
+      "id": "B_seed42",
+      "group": "B",
+      "seed": 42
+    },
+    {
+      "id": "B_seed2026",
+      "group": "B",
+      "seed": 2026
+    },
+    {
+      "id": "C_seed17",
+      "group": "C",
+      "seed": 17
+    },
+    {
+      "id": "C_seed42",
+      "group": "C",
+      "seed": 42
+    },
+    {
+      "id": "C_seed2026",
+      "group": "C",
+      "seed": 2026
+    },
+    {
+      "id": "D_seed17",
+      "group": "D",
+      "seed": 17
+    },
+    {
+      "id": "D_seed42",
+      "group": "D",
+      "seed": 42
+    },
+    {
+      "id": "D_seed2026",
+      "group": "D",
+      "seed": 2026
+    }
+  ],
+  "threshold": {
+    "source": "validation_only",
+    "per_run": true,
+    "metric": "macro_case_hard_dice",
+    "candidates": [
+      0.1,
+      0.15,
+      0.2,
+      0.25,
+      0.3,
+      0.35,
+      0.4,
+      0.45,
+      0.5,
+      0.55,
+      0.6,
+      0.65,
+      0.7,
+      0.75,
+      0.8,
+      0.85,
+      0.9
+    ],
+    "binarization": "probability_greater_than_or_equal_to_threshold",
+    "tie_break": "closest_to_0.5_then_larger",
+    "freeze_before_test": true
+  },
+  "evaluation": {
+    "resolution": [
+      256,
+      256
+    ],
+    "primary_metric": "dice",
+    "secondary_metric": "iou",
+    "aggregation": "macro_case",
+    "empty_target_empty_prediction": "dice_iou_null_report_normal_separately",
+    "empty_target_nonempty_prediction": "dice_iou_zero_report_normal_separately",
+    "nonempty_target_empty_prediction": "dice_iou_zero",
+    "postprocessing": "none",
+    "bootstrap": {
+      "replicates": 5000,
+      "seed": 20261013,
+      "unit": "patient",
+      "paired": true,
+      "confidence_level": 0.95,
+      "seed_handling": "mean_per_patient_across_training_seeds_before_resampling",
+      "interval_method": "percentile_2.5_and_97.5",
+      "uncertainty_scope": "test_patient_resampling_conditional_on_fixed_split_trained_models_and_thresholds"
+    },
+    "nonempty_target_empty_prediction_precision": "null",
+    "undefined_metric_storage": "python_none_json_null_csv_missing",
+    "normal_analysis": {
+      "threshold": "same_validation_selected_threshold_per_run",
+      "measures": [
+        "predicted_positive_pixels",
+        "predicted_positive_fraction",
+        "any_positive_pixel_flag"
+      ],
+      "aggregate_with_primary_cohort": false
+    },
+    "original_resolution": "nearest_neighbor_binary_mask_for_visualization_only",
+    "comparisons": {
+      "primary": "D-A",
+      "secondary": [
+        "B-A",
+        "C-A",
+        "D-C",
+        "D-B"
+      ],
+      "exploratory_interaction": "(D-C)-(B-A)",
+      "direction": "first_group_minus_second_group",
+      "multiplicity": "secondary_comparisons_exploratory_no_confirmatory_significance_claims"
+    },
+    "reporting": {
+      "patient_summary": [
+        "mean",
+        "sample_standard_deviation",
+        "median",
+        "quartiles",
+        "minimum",
+        "valid_count"
+      ],
+      "seed_summary": [
+        "mean_of_test_means",
+        "sample_standard_deviation_of_test_means",
+        "range_of_test_means"
+      ],
+      "standard_deviation_ddof": 1,
+      "combine_seeds": "average_patient_metrics_not_probabilities"
+    },
+    "subgroups": {
+      "relative_size": {
+        "definition": "original_target_pixels_divided_by_original_image_pixels",
+        "cutpoint_source": "training_ground_truth_only",
+        "cutpoints": "tertiles",
+        "fallback": "continuous_analysis_if_tied_cutpoints_or_extreme_imbalance",
+        "physical_size_claim": false
+      },
+      "margin": {
+        "source": "Margin_per_downloaded_data_dictionary",
+        "multilabel": true,
+        "groups_may_overlap": true,
+        "small_groups": "descriptive_or_case_examples_only",
+        "not_equivalent_to_image_blurriness": true
+      },
+      "physical_size": {
+        "source": "Pixel_size",
+        "status": "exploratory_only_after_unit_direction_missingness_and_applicability_audit"
+      }
+    },
+    "visualization": {
+      "seed": 17,
+      "same_cases_across_arms": true,
+      "case_selection": "predefined_best_middle_worst_by_seed_mean_dice_plus_small_missed_and_oversegmented_cases",
+      "report_selection_reference_arm": true,
+      "probability_ensemble": false
+    }
+  }
+}
