@@ -264,7 +264,9 @@
     ],
     "binarization": "probability_greater_than_or_equal_to_threshold",
     "tie_break": "closest_to_0.5_then_larger",
-    "freeze_before_test": true
+    "freeze_before_test": true,
+    "auxiliary_fixed_threshold": 0.5,
+    "comparison_interpretation": "training_strategy_with_shared_validation_selection_rule"
   },
   "evaluation": {
     "resolution": [
@@ -335,7 +337,8 @@
         "cutpoint_source": "training_ground_truth_only",
         "cutpoints": "tertiles",
         "fallback": "continuous_analysis_if_tied_cutpoints_or_extreme_imbalance",
-        "physical_size_claim": false
+        "physical_size_claim": false,
+        "clinical_stage_claim": false
       },
       "margin": {
         "source": "Margin_per_downloaded_data_dictionary",
@@ -354,7 +357,9 @@
       "same_cases_across_arms": true,
       "case_selection": "predefined_best_middle_worst_by_seed_mean_dice_plus_small_missed_and_oversegmented_cases",
       "report_selection_reference_arm": true,
-      "probability_ensemble": false
+      "probability_ensemble": false,
+      "selection_reference_arm": "D",
+      "purpose": "illustrative_success_and_failure_cases_not_population_summary"
     }
   }
 }

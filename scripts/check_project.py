@@ -8,7 +8,6 @@ with the configuration and documentation before freezing the new version.
 
 import json
 import math
-import os
 from pathlib import Path
 import re
 import sys
@@ -21,20 +20,16 @@ def check_markdown_links(root: Path) -> list[str]:
     """Check simple inline Markdown links; ignore URLs, anchors and code.
 
     This is an existence check, not a complete Markdown parser or an anchor
-    validator. Generated files, environments and downloaded data are skipped.
+    validator. Only public documentation locations are scanned; local thesis
+    packages and generated research artifacts are outside this check.
     """
     errors: list[str] = []
-    excluded = {
-        ".git", ".venv", "venv", "__pycache__", "node_modules", "data",
-        "datasets", "downloads", "outputs", "runs", "checkpoints", "models",
-        "artifacts",
-    }
-    documents: list[Path] = []
-    for directory, subdirectories, filenames in os.walk(root):
-        subdirectories[:] = [name for name in subdirectories if name not in excluded]
-        documents.extend(Path(directory) / name for name in filenames if name.endswith(".md"))
-    if (root / "data/README.md").is_file():
-        documents.append(root / "data/README.md")
+    documents = list(root.glob("*.md"))
+    for folder in ("docs", ".github"):
+        documents.extend((root / folder).rglob("*.md"))
+    for relative in ("data/README.md", "reports/README.md"):
+        if (root / relative).is_file():
+            documents.append(root / relative)
 
     link_pattern = re.compile(r"\[[^\]\n]*\]\(\s*(<[^>]*>|[^\s)]+)(?:\s+[\"'][^)]*)?\s*\)")
     for document in sorted(documents):
@@ -157,9 +152,20 @@ def validate_plan(plan: dict) -> list[str]:
     expect(threshold.get("candidates"), [i / 100 for i in range(10, 91, 5)], "threshold grid")
     expect(threshold.get("tie_break"), "closest_to_0.5_then_larger", "threshold tie rule")
     expect(threshold.get("freeze_before_test"), True, "threshold freeze")
+    expect(threshold.get("auxiliary_fixed_threshold"), 0.5, "auxiliary fixed threshold")
     evaluation = plan.get("evaluation", {})
     expect(evaluation.get("resolution"), [256, 256], "evaluation resolution")
     expect(evaluation.get("aggregation"), "macro_case", "evaluation aggregation")
+    expect(evaluation.get("comparisons", {}).get("primary"), "D-A", "primary comparison")
+    expect(
+        evaluation.get("reporting", {}).get("combine_seeds"),
+        "average_patient_metrics_not_probabilities",
+        "seed aggregation is not an ensemble",
+    )
+    visualization = evaluation.get("visualization", {})
+    expect(visualization.get("seed"), 17, "illustration seed")
+    expect(visualization.get("selection_reference_arm"), "D", "illustration reference arm")
+    expect(visualization.get("probability_ensemble"), False, "no probability ensemble")
     bootstrap = evaluation.get("bootstrap", {})
     expect(bootstrap.get("replicates"), 5000, "bootstrap replicates")
     expect(bootstrap.get("seed"), 20261013, "bootstrap seed")

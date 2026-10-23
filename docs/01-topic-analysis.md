@@ -140,4 +140,4 @@ Dice 损失直接围绕预测与参考区域的重合程度构造目标，对区
 2. *A curated benchmark dataset for ultrasound based breast lesion analysis*. Scientific Data, 2024. [数据集论文](https://www.nature.com/articles/s41597-024-02984-z)。
 3. TCIA. *Breast-Lesions-USG*. [官方集合入口](https://www.cancerimagingarchive.net/collection/breast-lesions-usg/)。
 
-实际论文需按学校规定核验并统一参考文献格式；本节仅列支撑课题理解的原始资料，不代表文献综述已经完成。
+本节仅列支撑课题理解的原始资料。现稿已完成文献综述，21篇实际引用及使用限制见[现用文献](07-sources.md)；文献综述完成不代表模型实验完成。

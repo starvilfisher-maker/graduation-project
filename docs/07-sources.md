@@ -1,40 +1,256 @@
-# 资料与来源
+# 现用文献与研究依据
 
-本页是研究设计的初始阅读清单，不是已经满足学校数量要求的最终参考文献表。正式综述还需系统检索、阅读全文、核对作者与出版信息，并按学校模板统一引用。核对日期为2026年10月13日。
+更新日期：2026年10月23日。编号对应2026年10月22日完整开题稿的开题报告和文献综述共用书目[1]—[21]，不是初始候选清单。现用21篇中外文17篇、中文4篇，2024—2026年13篇。
 
-## 直接支撑本课题的原始资料
+本页提供公开书目信息、DOI、阅读摘要及使用范围；[BibTeX书目](references.bib)可导入文献管理软件，不含本地文件路径或PDF。现稿译文选用[1]，其文内编号沿用英文原稿，不与本页混用。
 
-1. **Ronneberger O, Fischer P, Brox T. U-Net: Convolutional Networks for Biomedical Image Segmentation. 2015.** [作者论文](https://arxiv.org/abs/1505.04597)。用于理解编码器、解码器、跳跃连接及医学图像分割；本项目采用明确记录的现代同尺寸实现，不声称逐项复制原论文所有设置。
-2. **Pawłowska A 等. Curated benchmark dataset for ultrasound based breast lesion analysis. Scientific Data, 11, 148, 2024.** [原文](https://www.nature.com/articles/s41597-024-02984-z)，[DOI](https://doi.org/10.1038/s41597-024-02984-z)。用于核实BrEaST数据构成、标注目标、病例字段及局限。
-3. **TCIA Breast-Lesions-USG 数据集合，Version 1.** [官方入口](https://www.cancerimagingarchive.net/collection/breast-lesions-usg/)，数据DOI：[10.7937/9WKK-Q141](https://doi.org/10.7937/9WKK-Q141)。数据引用与数据论文引用分别保留；版本与实际下载文件还需下载时再次确认。
+## 来源核验与版本
 
-## 评价方法与近期文献线索
+本地留存21篇PDF，2026年10月22日的文件哈希均与来源清单一致；17篇取得Crossref元数据，第5、6、7、8篇中文论文在该接口未检索到，结合既有期刊或数据库来源和论文文本核对。未检索到不代表论文不存在，也不记为Crossref验证成功。本次仓库同步沿用这些记录，没有新增网络检索。
 
-下面列出核实过题名、年份与来源入口的候选资料。网页检索和摘要阅读不等于完成全文精读；不从摘要推断没有报告过的实验结论。
+保存版本为17份正式排版版及4份作者预印本（[2]、[4]、[12]、[21]）。书目按正式发表记录著录，引用具体原文页码时需核对所用版本。原文全文、学校代理链接及授权信息不公开上传。元数据核验不等于复现论文结果。
 
-| 资料 | 年份 | 对本课题的用途 | 原始入口 |
-| --- | --- | --- | --- |
-| Metrics reloaded: recommendations for image analysis validation | 2024 | 根据任务目标选择指标，理解指标解释边界 | [Nature Methods](https://www.nature.com/articles/s41592-023-02151-z) |
-| Understanding metric-related pitfalls in image analysis validation | 2024 | 讨论空目标、目标大小及汇总方法可能造成的误解 | [Nature Methods](https://www.nature.com/articles/s41592-023-02150-0) |
-| BUS-UCLM: Breast ultrasound lesion segmentation dataset | 2025 | 了解其他数据集的标注方式与患者多图问题；不代表本课题改用该数据 | [Scientific Data](https://www.nature.com/articles/s41597-025-04562-3) |
-| A foundation generative model for breast ultrasound image analysis | 2026 | 作为领域发展趋势的候选阅读；不将大模型加入当前基础实验 | [Nature Biomedical Engineering](https://www.nature.com/articles/s41551-026-01639-1) |
+## 21篇文献及用途
 
-这组候选与BrEaST论文提供了近期阅读起点。最终应按学院对“近三年”的口径、全文相关性和实际引用情况取舍，不能仅为凑数列入。
+### [1] 用于乳腺超声病灶分析的经整理基准数据集
 
-## 后续检索与阅读记录
+PAWŁOWSKA A, ĆWIERZ-PIEŃKOWSKA A, DOMALIK A, et al. Curated Benchmark Dataset for Ultrasound Based Breast Lesion Analysis[J]. Scientific Data, 2024, 11(1): 148.
 
-中文检索词可组合“乳腺超声＋病灶分割”“U-Net＋损失函数”“医学图像＋数据增强”“图像分割＋评价指标”。英文可用 breast ultrasound segmentation、U-Net、loss function、data augmentation、small dataset、segmentation evaluation。优先寻找原始论文和可靠综述，核对出版信息，不直接采信二次转载的成绩表。
+- 公开入口：[DOI](https://doi.org/10.1038/s41597-024-02984-z)。
+- 主要内容：发布256名患者的256幅乳腺超声图像，介绍采集、匿名化、专家标注、病例标签及质量核对。数据包括良性、恶性和正常病例，提供病灶掩码及其他结构标注。
+- 本课题用途：说明本课题的数据来源、样本构成、tumor与other区别、字段含义及标注局限；同时作为外文节译原稿。
+- 实际引用章节：开题报告 / 1.1 选题的背景；开题报告 / 1.2 国内外研究现状；开题报告 / 3.1 数据来源与患者划分；文献综述 / 1.1 研究任务与技术演进；文献综述 / 1.3 公开数据与研究对象；文献综述 / 3.1 方法与数据基础的已有进展；文献综述 / 4.1 样本规模与数据分布的限制；文献综述 / 4.2 标注与预处理引入的不确定性。
+- 阅读定位：BrEaST摘要、Methods、Data Records、Technical Validation、Usage Notes；数据规模、目标语义、标签区别与局限。全文作为外文节译原稿。
+- 使用限制：公开数据规模不等于最终纳入数量；缺失掩码不能自动视为正常。标注是参考标准，不代表所有边界不存在争议。
 
-阅读表至少包含题名、作者、年份、DOI/稳定链接、研究任务、数据集、样本与患者数、划分方式、网络、损失、增强、指标、主要发现、限制和本课题拟引用位置。没有公开说明的信息标记“未报告”，不要补造。不同数据集、不同划分上的Dice不能直接视为公平排名。
+### [2] 用于生物医学图像分割的U-Net卷积网络
 
-围绕以下缺口补充后续文献：传统超声分割方法、U-Net改进的代表工作、损失设计、医学图像增强、小样本评价和国内相关研究。当前清单不足模板要求的完整文献数量，后续需要继续补充并在正文中真实引用。
+RONNEBERGER O, FISCHER P, BROX T. U-Net: Convolutional Networks for Biomedical Image Segmentation[C]//Medical Image Computing and Computer-Assisted Intervention - MICCAI 2015. Cham: Springer, 2015: 234-241.
 
-## 工程官方资料
+- 公开入口：[DOI](https://doi.org/10.1007/978-3-319-24574-4_28)。
+- 主要内容：提出编码器、解码器与跳跃连接组成的分割网络。下采样提取图像特征，上采样恢复位置细节，跳跃连接传递不同层次的信息，并讨论有限标注条件下的训练增强。
+- 本课题用途：说明采用标准二维U-Net的理论基础及结构组成，建立可复核的基线模型。
+- 实际引用章节：开题报告 / 1.1 选题的背景；开题报告 / 1.2 国内外研究现状；文献综述 / 1.2 U-Net及其改进研究；文献综述 / 3.1 方法与数据基础的已有进展。
+- 阅读定位：原论文网络结构及训练增强部分；支持编码器、解码器、跳跃连接和有限标注条件下训练策略。
+- 使用限制：保存的是作者预印本，不能将其页码当作会议正式版页码；原文任务成绩不能作为乳腺超声实验的预期成绩。
 
-- [TensorFlow 安装说明](https://www.tensorflow.org/install/pip)：训练环境选版本时再次核查，当前未安装和验证TensorFlow。
-- [Apple TensorFlow Metal 插件](https://developer.apple.com/metal/tensorflow-plugin/)：Mac可选加速路径，实际兼容性和耗时以试跑为准。
-- [Codex Cloud 环境](https://learn.chatgpt.com/docs/environments/cloud-environments)：当前云环境创建、准备、发布与复用方式。
+### [3] 医学图像分割中注意力机制的研究进展
 
-## 学校模板来源
+ZHANG J, CHEN X, YANG B, et al. Advances in Attention Mechanisms for Medical Image Segmentation[J]. Computer Science Review, 2025, 56: 100721.
 
-使用用户提供的《2027届开题报告（含文献综述、外文翻译）模板解读》核对结构与篇幅要求。原始Word仅只读分析，没有上传公开仓库。本页也不包含用户姓名、学号或导师个人资料。正式提交时使用学校原模板及最新通知。
+- 公开入口：[DOI](https://doi.org/10.1016/j.cosrev.2024.100721)。
+- 主要内容：梳理医学图像分割中的注意力机制，覆盖Transformer之前的方法、Transformer及Mamba等方向，讨论标准评价、失败案例和计算复杂度。
+- 本课题用途：组织国内外技术发展脉络，说明复杂结构之外还应关注公平评价、失败案例及成本。
+- 实际引用章节：开题报告 / 1.2 国内外研究现状；文献综述 / 1.1 研究任务与技术演进；文献综述 / 1.2 U-Net及其改进研究；文献综述 / 2.1 从复杂结构转向可解释的训练对照。
+- 阅读定位：6.2节标准评价、失败案例和复杂度；按pre-Transformer、Transformer、Mamba梳理注意力。
+- 使用限制：这是跨模态综述，不能单独证明某个模块在本课题乳腺超声数据上有效；主实验不引入这些复杂架构。
+
+### [4] 可自行配置的生物医学图像分割方法nnU-Net
+
+ISENSEE F, JAEGER P F, KOHL S A A, et al. nnU-Net: A Self-Configuring Method for Deep Learning-Based Biomedical Image Segmentation[J]. Nature Methods, 2021, 18(2): 203-211.
+
+- 公开入口：[DOI](https://doi.org/10.1038/s41592-020-01008-z)。
+- 主要内容：将预处理、网络配置、训练及后处理作为相互关联的流程，依据数据特点进行配置。相关作者预印本讨论自动设计生物医学分割方法。
+- 本课题用途：说明基线可靠性依赖完整流程，支持固定预处理、训练预算及评价规则的对照设计。
+- 实际引用章节：开题报告 / 1.2 国内外研究现状；文献综述 / 1.2 U-Net及其改进研究；文献综述 / 2.1 从复杂结构转向可解释的训练对照。
+- 阅读定位：正式记录与关联作者预印本中的自配置流程；支持预处理、结构、训练和后处理共同影响分割流程，不引用预印本页码冒充正式页码。
+- 使用限制：本地预印本题名与正式版不同，详见来源表；本课题不使用nnU-Net替换导师指定的标准二维U-Net。
+- 保存版本说明：本地为arXiv:1904.08128v2，题名为Automated Design of Deep Learning Methods for Biomedical Image Segmentation；记录关联正式DOI，不能当作Nature Methods正式排版版。
+
+### [5] 用多重注意力引导超声乳腺肿瘤分割
+
+郭洪洋, 程前, 康晓东, 等. 多重注意力引导的超声乳腺癌肿瘤图像分割[J]. 计算机科学, 2024, 51(6A): 230500004-6.
+
+- 公开入口：[DOI](https://doi.org/10.11896/jsjkx.230500004)。
+- 主要内容：围绕乳腺超声病灶分割，采用多重注意力、特征融合和金字塔结构增强病灶特征表达，体现国内对尺度变化和边界问题的研究方向。
+- 本课题用途：介绍国内注意力与特征融合路线，作为标准U-Net之外的结构改进背景。
+- 实际引用章节：开题报告 / 1.2 国内外研究现状；文献综述 / 1.2 U-Net及其改进研究。
+- 阅读定位：期刊PDF摘要与方法；支持多重注意力、特征融合及金字塔结构的方向概括，不搬用性能数字。
+- 使用限制：只据已阅读的摘要和方法概括技术方向，不搬用性能数字，也不将多个模块的整体收益归因于单一因素。
+
+### [6] 以自适应卷积和双向边界感知处理乳腺超声病变分割
+
+王洁, 李璐瑶. 基于逐通道空间自适应选择核卷积与双向边界感知机制的乳腺超声图像病变分割网络[J]. 华南理工大学学报(自然科学版), 2026, 54(2): 77-90.
+
+- 公开入口：[DOI](https://doi.org/10.12141/j.issn.1000-565X.250230)。
+- 主要内容：研究逐通道空间自适应选择核卷积及双向边界感知机制，采用BCE与Dice混合损失和深度监督，设置增强、消融及外部验证。
+- 本课题用途：介绍弱边界与尺度适应研究，为比较BCE和BCE+Dice提供任务相关背景，并说明多因素同时变化的解释限制。
+- 实际引用章节：开题报告 / 1.2 国内外研究现状；文献综述 / 1.2 U-Net及其改进研究；文献综述 / 2.1 从复杂结构转向可解释的训练对照；文献综述 / 3.1 方法与数据基础的已有进展。
+- 阅读定位：1.3节BCE+Dice及深度监督，2.1—2.6节数据、增强、外部验证与消融。
+- 使用限制：网络、深度监督、损失和增强同时存在，不能把整体收益归因于BCE+Dice。原PDF交叉引用表不规则，保留下载原样。
+
+### [7] 利用联合蒸馏训练乳腺超声肿瘤分割模型
+
+郭宏江, 丁优优, 党豪, 等. 一种基于联合蒸馏的乳腺超声影像肿瘤分割模型[J]. 生物医学工程学杂志, 2025, 42(1): 148-155.
+
+- 公开入口：[DOI](https://doi.org/10.7507/1001-5515.202311054)。
+- 主要内容：使用双教师与学生网络，通过联合损失传递知识，比较模型参数量及计算量，并开展消融和从BUSI到Dataset B的外部验证。
+- 本课题用途：补充国内轻量化与训练策略研究，说明模型表达、先验信息、部署成本及验证条件需要共同考虑。
+- 实际引用章节：开题报告 / 1.2 国内外研究现状；文献综述 / 1.2 U-Net及其改进研究；文献综述 / 2.1 从复杂结构转向可解释的训练对照。
+- 阅读定位：1.1—1.4节双教师与学生网络、联合损失；2.4.2—2.4.3节消融与BUSI到Dataset B外部验证。
+- 使用限制：双教师使用良恶性类别先验，与本课题输入条件不同；原文式(9)的ACC写法存在疑点，本报告不沿用该公式。
+
+### [8] 结合模糊逻辑的轻量化U²-Net乳腺超声病变分割方法
+
+庄建军, 万理. SCF U²-Net: 结合模糊逻辑的轻量化改进U²-Net乳腺超声病变分割方法[J]. 计算机科学, 2025, 52(7): 161-169.
+
+- 公开入口：[DOI](https://doi.org/10.11896/jsjkx.240500134)。
+- 主要内容：在U²-Net方向上结合模糊逻辑、深度可分离扩张卷积和坐标注意力，讨论超声边界不确定性与计算效率。
+- 本课题用途：介绍国内处理弱边界及轻量化的技术路线，说明现有复杂方法与本课题训练因素对照的定位差异。
+- 实际引用章节：开题报告 / 1.2 国内外研究现状；文献综述 / 1.2 U-Net及其改进研究。
+- 阅读定位：摘要及方法介绍；支持模糊逻辑、深度可分离扩张卷积、坐标注意力和轻量化方向，不外推BUSI成绩。
+- 使用限制：U²-Net与标准U-Net不是同一结构；不外推BUSI上的成绩，也不将该网络纳入本课题主实验。
+
+### [9] 面向乳腺超声分割及影像组学应用的领域感知多尺度融合网络
+
+HALDER A, MAHADEVAPPA M. MulFF-Net: A Domain-Aware Multiscale Feature Fusion Network for Breast Ultrasound Image Segmentation with Radiomic Applications[J]. IEEE Transactions on Instrumentation and Measurement, 2025, 74: 5030711.
+
+- 公开入口：[DOI](https://doi.org/10.1109/TIM.2025.3566814)。
+- 主要内容：在跳跃连接中使用扩张卷积与空间注意力，并使用学习领域知识的编码器。以BUSBRA训练，在BrEaST和BUSI外部验证，还分析分割对影像组学特征的影响。
+- 本课题用途：区分内部测试与外部验证，提醒核对指标汇总方式；原文mIoU和mDice表示病例中位数。
+- 实际引用章节：开题报告 / 1.2 国内外研究现状；文献综述 / 1.2 U-Net及其改进研究；文献综述 / 2.2 从整体均值转向病例层面的评价；文献综述 / 3.1 方法与数据基础的已有进展。
+- 阅读定位：II-A数据、II-B结构、II-C训练、II-D评价；BUSBRA训练、BrEaST/BUSI外部验证；mIoU和mDice指中位数。
+- 使用限制：预训练、域知识、损失和数据条件均不同，不能直接排名。原文BUSI样本数存在算术不一致，不用该文转述数据规模。
+
+### [10] 量化病灶纹理与形状如何关联乳腺超声分割表现
+
+MUDRIKAH M A, JULIA S, AZIZAH Z, et al. Quantifying How Lesion Texture and Shape Influence Deep Learning Segmentation in Breast Ultrasound[J]. Biomedical Signal Processing and Control, 2026, 125: 110788.
+
+- 公开入口：[DOI](https://doi.org/10.1016/j.bspc.2026.110788)。
+- 主要内容：以BrEaST训练、BLUI外部测试，比较多种分割模型；从图像及真实掩码提取形状、强度、纹理等特征，分析其与分割质量的关系。
+- 本课题用途：直接支持按病例分析误差的研究思路，说明面积、边缘等信息可用于预测完成后的解释。
+- 实际引用章节：开题报告 / 1.2 国内外研究现状；文献综述 / 1.2 U-Net及其改进研究；文献综述 / 2.1 从复杂结构转向可解释的训练对照；文献综述 / 3.1 方法与数据基础的已有进展；文献综述 / 4.2 标注与预处理引入的不确定性。
+- 阅读定位：3.1—3.5节：BrEaST有病灶图90/10、BLUI外部测试；224x224、BCE、无增强；真实掩码事后提取15特征与JSI关系。
+- 使用限制：原文为224×224、BCE且无增强，还提及病灶中心训练图块；不采用真实掩码辅助测试定位，不复制其性能数字。
+
+### [11] 基于检索式SAM2的免任务训练乳腺超声分割
+
+HE J, LI H, YANG L, et al. Training-Free Breast Ultrasound Image Segmentation with Retrieval-Based SAM2[J]. IEEE Transactions on Biomedical Engineering, 2026, 73(2): 911-922.
+
+- 公开入口：[DOI](https://doi.org/10.1109/TBME.2025.3595981)。
+- 主要内容：将待分割图像与检索到的训练参考图像组成序列，利用参考掩码引导SAM2。无需重新训练任务参数，但仍依赖预训练权重、参考标注及验证集配置选择。
+- 本课题用途：介绍基础模型新方向，阐明“免训练”的实际含义，并说明数据清理与信息来源边界。
+- 实际引用章节：开题报告 / 1.2 国内外研究现状；文献综述 / 1.2 U-Net及其改进研究；文献综述 / 3.1 方法与数据基础的已有进展。
+- 阅读定位：III-B—IV-A：BUSI清理、检索参考训练图像和掩码、验证集选择TOP-K/STEP/SSCD配置。
+- 使用限制：不是不需要数据或调参的方法；本课题不将SAM2列入实验组。正式卷期为2026年，在线发表为2025年。
+
+### [12] 高度类别不平衡分割中的广义Dice损失
+
+SUDRE C H, LI W, VERCAUTEREN T, et al. Generalised Dice Overlap as a Deep Learning Loss Function for Highly Unbalanced Segmentations[C]//Deep Learning in Medical Image Analysis and Multimodal Learning for Clinical Decision Support. Cham: Springer, 2017: 240-248.
+
+- 公开入口：[DOI](https://doi.org/10.1007/978-3-319-67558-9_28)。
+- 主要内容：讨论分割中目标与背景数量不平衡的问题，研究广义Dice重叠损失及其类别权重，提供从区域重叠角度设计优化目标的依据。
+- 本课题用途：解释小病灶像素占比较低时逐像素训练可能遇到的问题，提供Dice类损失的研究背景。
+- 实际引用章节：开题报告 / 1.2 国内外研究现状；文献综述 / 1.4 损失函数与数据增强。
+- 阅读定位：作者预印本摘要与损失定义；支持类别不平衡下广义Dice的研究背景，不将本课题普通软Dice称作同一方法。
+- 使用限制：广义Dice不等同于普通软Dice；本课题不声称复现该方法。保存版本为作者预印本。
+
+### [13] 统一Dice与交叉熵类损失以处理医学分割类别不平衡
+
+YEUNG M, SALA E, SCHÖNLIEB C B, et al. Unified Focal Loss: Generalising Dice and Cross Entropy-Based Losses to Handle Class Imbalanced Medical Image Segmentation[J]. Computerized Medical Imaging and Graphics, 2022, 95: 102026.
+
+- 公开入口：[DOI](https://doi.org/10.1016/j.compmedimag.2021.102026)。
+- 主要内容：提出Unified Focal Loss框架，将交叉熵类与Dice类损失联系起来，讨论医学分割中的类别不平衡及两类目标的组合。
+- 本课题用途：支持同时考虑逐像素误差和区域重叠的损失设计背景，解释BCE与BCE+Dice对照的研究动机。
+- 实际引用章节：开题报告 / 1.2 国内外研究现状；文献综述 / 1.4 损失函数与数据增强。
+- 阅读定位：摘要及损失函数框架部分；支持交叉熵与Dice类损失组合研究，不声称复现Unified Focal Loss。
+- 使用限制：本课题的0.5 BCE+0.5 Dice不等于Unified Focal Loss完整方法；正式发表年份按2022年记录。
+
+### [14] 深度学习图像数据增强方法综述
+
+SHORTEN C, KHOSHGOFTAAR T M. A Survey on Image Data Augmentation for Deep Learning[J]. Journal of Big Data, 2019, 6(1): 60.
+
+- 公开入口：[DOI](https://doi.org/10.1186/s40537-019-0197-0)。
+- 主要内容：综述几何变换、颜色变换等图像增强方法，讨论通过增加合理输入变化帮助模型学习的思路及应用背景。
+- 本课题用途：说明旋转、平移等增强的基本动机，同时提出分割任务需要图像与掩码同步变化。
+- 实际引用章节：开题报告 / 1.2 国内外研究现状；文献综述 / 1.4 损失函数与数据增强。
+- 阅读定位：综述中几何变换与增强讨论；支持增强的基本原理与研究方向。同步掩码、幅度和回退规则属于本课题设计。
+- 使用限制：不是乳腺超声专用增强处方；同步掩码、幅度与回退规则属于本课题设计，不能归称原文已验证这些参数。
+
+### [15] 乳腺超声图像数据集BUSI
+
+AL-DHABYANI W, GOMAA M, KHALED H, et al. Dataset of Breast Ultrasound Images[J]. Data in Brief, 2020, 28: 104863.
+
+- 公开入口：[DOI](https://doi.org/10.1016/j.dib.2019.104863)。
+- 主要内容：介绍包含正常、良性和恶性乳腺超声图像及相应信息的BUSI资源，为分类与分割研究提供公开数据基础。
+- 本课题用途：展示乳腺超声公开数据的发展，说明不同数据集的病例构成与标注条件存在差异。
+- 实际引用章节：开题报告 / 1.2 国内外研究现状；文献综述 / 1.3 公开数据与研究对象。
+- 阅读定位：数据说明及类别构成；用作公开乳腺超声数据资源背景，不参与主实验。
+- 使用限制：仅用于背景，本课题主实验不使用BUSI，也不与BrEaST混合扩大独立样本数。正式卷期年份为2020年。
+
+### [16] 乳腺超声病灶分割数据集BUS-UCLM
+
+VALLEZ N, BUENO G, DENIZ O, et al. BUS-UCLM: Breast Ultrasound Lesion Segmentation Dataset[J]. Scientific Data, 2025, 12(1): 242.
+
+- 公开入口：[DOI](https://doi.org/10.1038/s41597-025-04562-3)。
+- 主要内容：发布683幅乳腺超声图像，来自38次患者超声检查，并介绍采集、标注及病例信息。强调图像数量与独立受试者数量可能相差很大。
+- 本课题用途：支持患者层面的划分与统计单位说明，补充近年公开数据资源背景。
+- 实际引用章节：开题报告 / 1.2 国内外研究现状；文献综述 / 1.3 公开数据与研究对象；文献综述 / 3.1 方法与数据基础的已有进展。
+- 阅读定位：摘要、Methods、Data Records及病例表；区分38次检查与683图，强调同患者多图需患者划分。
+- 使用限制：不能把683幅图像写成683名独立患者；本课题不使用该数据集训练。
+
+### [17] 图像分析评价中与指标相关的常见陷阱
+
+REINKE A, TIZABI M D, BAUMGARTNER M, et al. Understanding Metric-Related Pitfalls in Image Analysis Validation[J]. Nature Methods, 2024, 21(2): 182-194.
+
+- 公开入口：[DOI](https://doi.org/10.1038/s41592-023-02150-0)。
+- 主要内容：梳理指标在图像分析中的使用问题，通过问题分类和实例说明对象大小、汇总层级、空参考及任务目标如何影响指标解释。
+- 本课题用途：支持以病例为单位评价、关注小病灶和空掩码规则，避免把平均分或像素准确率当作完整表现。
+- 实际引用章节：开题报告 / 1.3 发展趋势；开题报告 / 3.4 评价指标与统计分析；文献综述 / 2.2 从整体均值转向病例层面的评价；文献综述 / 3.1 方法与数据基础的已有进展；文献综述 / 4.3 比较偏倚与结果过度解释。
+- 阅读定位：指标问题分类及实例；支持小目标、汇总方式、指标解释和空参考等问题。
+- 使用限制：这是方法学依据，不能替代本课题实际指标验证；不同论文同名指标的计算单位可能不同。
+
+### [18] Metrics Reloaded图像分析验证建议
+
+MAIER-HEIN L, REINKE A, GODAU P, et al. Metrics Reloaded: Recommendations for Image Analysis Validation[J]. Nature Methods, 2024, 21(2): 195-212.
+
+- 公开入口：[DOI](https://doi.org/10.1038/s41592-023-02151-z)。
+- 主要内容：提出根据任务目标与数据特征选择指标的框架，强调验证方法应回答具体研究问题，指标选择和组织需要与应用情境匹配。
+- 本课题用途：支持采用区域重叠指标并结合病例分布和轮廓图解释结果，说明Dice与IoU并非独立证据。
+- 实际引用章节：开题报告 / 1.3 发展趋势；开题报告 / 3.4 评价指标与统计分析；文献综述 / 2.2 从整体均值转向病例层面的评价；文献综述 / 3.1 方法与数据基础的已有进展；文献综述 / 4.3 比较偏倚与结果过度解释。
+- 阅读定位：任务驱动的指标选择建议；支持按任务选择区域重叠指标与补充病例分析。
+- 使用限制：指标建议不能证明临床有效；同病例Dice与IoU的关系不能直接用于互换两种指标的总体均值。
+
+### [19] 医学影像人工智能报告清单CLAIM的2024年更新
+
+TEJANI A S, KLONTZAS M E, GATTI A A, et al. Checklist for Artificial Intelligence in Medical Imaging (CLAIM): 2024 Update[J]. Radiology: Artificial Intelligence, 2024, 6(4): e240300.
+
+- 公开入口：[DOI](https://doi.org/10.1148/ryai.240300)。
+- 主要内容：更新医学影像人工智能研究报告清单，围绕数据来源、模型开发、验证及报告过程提出透明披露要求。
+- 本课题用途：支持保存患者划分、参数、验证规则、环境与逐病例结果，明确未完成步骤及适用限制。
+- 实际引用章节：开题报告 / 1.3 发展趋势；文献综述 / 2.3 从单次成绩转向不确定性与可重复性；文献综述 / 3.1 方法与数据基础的已有进展。
+- 阅读定位：CLAIM 2024清单；支持数据、模型、验证与报告透明性。
+- 使用限制：报告规范不是模型质量认证；遵循清单不代表已经完成外部验证或临床验证。
+
+### [20] Bootstrap重采样方法的原始研究
+
+EFRON B. Bootstrap Methods: Another Look at the Jackknife[J]. The Annals of Statistics, 1979, 7(1): 1-26.
+
+- 公开入口：[DOI](https://doi.org/10.1214/aos/1176344552)。
+- 主要内容：提出从观测样本重复有放回抽样的Bootstrap思路，以估计统计量的抽样波动，为复杂统计量的不确定性分析提供方法基础。
+- 本课题用途：支持患者层面的配对重采样，用于描述组合方案与基线平均Dice差异的不确定性。
+- 实际引用章节：开题报告 / 3.4 评价指标与统计分析；文献综述 / 2.3 从单次成绩转向不确定性与可重复性。
+- 阅读定位：Bootstrap原始文献的出版记录、正文首页与重采样思想；本课题患者配对及5000次设置为研究设计，不声称原文指定该次数。
+- 使用限制：患者配对、5000次重采样和固定种子是本课题设计，不是原文指定。固定已训练模型的区间不包含全部重新训练不确定性。
+
+### [21] 乳腺超声图像自动分割方法综述
+
+XIAN M, ZHANG Y, CHENG H D, et al. Automatic Breast Ultrasound Image Segmentation: A Survey[J]. Pattern Recognition, 2018, 79: 340-355.
+
+- 公开入口：[DOI](https://doi.org/10.1016/j.patcog.2018.02.012)。
+- 主要内容：综述乳腺超声自动分割技术，按六类方法组织讨论，并区分自动化程度及对种子、选区等人工信息的依赖。
+- 本课题用途：补充深度学习之前的技术脉络，说明灰度、区域及轮廓方法与当前网络路线的关系。
+- 实际引用章节：文献综述 / 1.1 研究任务与技术演进；文献综述 / 3.1 方法与数据基础的已有进展。
+- 阅读定位：预印本引言、六类方法及自动化程度讨论；支持传统分割路线、种子或选区依赖。
+- 使用限制：属于较早的技术综述，不能用于概括2025—2026年的全部进展；保存的是作者预印本。
+
+## 数据与工程资料
+
+- 数据集：TCIA Breast-Lesions-USG Version 1，[官方入口](https://www.cancerimagingarchive.net/collection/breast-lesions-usg/)，[数据DOI](https://doi.org/10.7937/9WKK-Q141)。数据引用与文献[1]的数据论文引用分开；本地下载和核对状态见[交付记录](08-delivery-status.md)。
+- [TensorFlow安装说明](https://www.tensorflow.org/install/pip)与[Apple Metal插件](https://developer.apple.com/metal/tensorflow-plugin/)用于后续环境核查；本项目尚未验证正式训练环境。
+
+## 后续阅读和比较规则
+
+新增资料必须记录题名、年份、DOI、任务、数据集、患者与图像数量、划分、损失、增强、指标及限制。未报告的信息不补造。不同数据集、输入条件或指标汇总方式的成绩不直接排名；本课题采用标准U-Net和BrEaST，不因综述包含其他数据或模型而改变主实验。
+
+学校模板只在本地用作格式依据。本页不发布个人信息、学校模板、完整译文或论文附件。

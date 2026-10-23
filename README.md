@@ -6,6 +6,8 @@
 
 开始逐步完成论文，请先读[论文执行与学习路线](docs/09-guided-thesis-roadmap.md)。当前读取规则、实际结果与审阅范围见[预处理与第二轮核对](docs/11-preprocessing-and-qc.md)，历史编码发现见[首轮记录](docs/10-data-first-pass.md)。
 
+研究方案已按2026年10月22日的完整开题稿同步。开题正文、文献综述及BrEaST外文节译已在本地完成；公开仓库提供[21篇现用文献及用途](docs/07-sources.md)、[可导入书目](docs/references.bib)和[开题稿与实现对应表](docs/12-proposal-alignment.md)。个人文稿、论文PDF及本地v1资料包不随仓库发布。文稿完成不代表模型训练完成。
+
 ## 从这里阅读
 
 | 文档 | 回答的问题 |
@@ -21,6 +23,7 @@
 | [论文执行与学习路线](docs/09-guided-thesis-roadmap.md) | 每一步做什么、交付什么、写入论文哪里；第一课如何读懂图像与掩码 |
 | [数据首轮核对记录](docs/10-data-first-pass.md) | 历史文件清点与通道编码发现 |
 | [预处理与第二轮核对](docs/11-preprocessing-and-qc.md) | 实际读取规则、全量缩放检查、图册及论文方法草稿 |
+| [开题稿与实现对应表](docs/12-proposal-alignment.md) | 最新稿中的约定如何落实到配置，以及哪些模块尚待实现 |
 
 ## 研究主线
 
@@ -43,7 +46,7 @@ flowchart TD
 | C | BCE | 有 |
 | D | 0.5 BCE + 0.5 Dice loss | 有 |
 
-所有组共用患者划分及训练种子 17、42、2026，共12次正式训练。主比较预设为 D−A，其余对照用于解释两项训练策略的作用。完整设计见[实验协议](docs/03-experiment-and-statistics.md)，机器可读建议值见[实验配置](configs/experiment_plan.json)。
+所有组共用患者划分及训练种子 17、42、2026，共计划12次正式训练；种子控制初始化、训练顺序和增强随机过程，不是病例编号。主比较预设为 D−A，评价训练方案配合统一验证阈值选择规则后的表现，其余对照用于解释两项训练策略的作用。完整设计见[实验协议](docs/03-experiment-and-statistics.md)，机器可读建议值见[实验配置](configs/experiment_plan.json)。
 
 ## 立即可运行的检查
 
